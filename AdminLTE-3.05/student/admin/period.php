@@ -1,0 +1,125 @@
+<?php include('../includes/config.php')?>
+
+<?php 
+if(isset($_POST['submit']))
+{
+$title=isset($_POST['title'])?$_POST['title']:'';
+$from=isset($_POST['from'])?$_POST['from']:'';
+$to=isset($_POST['to'])?$_POST['to']:'';
+$status='publish';
+$type='period';
+$date_add= date('Y-m-d');
+
+
+$query=mysqli_query($con, "INSERT INTO `posts` (`title`,`status`,`publish_date`,`type`) VALUE('$title','$status','$date_add','$type')");
+
+if($query){
+  // it use  to return the id which is generated in   the insert whuch is $query 
+  $item_id=mysqli_insert_id($con);
+}
+mysqli_query($con, "INSERT INTO `metadata` (`meta_key`,`meta_value`,`item_id`) VALUES('from','$from','$item_id')");
+mysqli_query($con, "INSERT INTO `metadata` (`meta_key`,`meta_value`,`item_id`) VALUES('to' ,'$to','$item_id')");
+header('Location: ../admin/dashboard.php');
+}
+?>
+<?php include('header.php')?>
+<?php include('sidebar.php')?>
+<?php include('./includes/functions.php')?>
+
+
+<?php 
+
+// if(isset($_POST['submit'])){
+//     $title=$_POST['title'];
+//     mysqli_query($con,"INSERT INTO section (title) VALUE ('$title')");
+// }
+?>
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"> period :-</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Admin</a></li>
+              <li class="breadcrumb-item active">Sections</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+     <!-- Main content -->
+     <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+      
+             <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    period
+</h2>
+<div class="card-tools">
+ 
+</div>
+</div>
+<div class="card-body">
+        <!-- Info boxes -->
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thread>
+              <tr>
+                <th>S.No</th>
+                <th>Title</th>
+            
+                <th>From</th>
+                <th>To</th>
+
+</tr>
+</thread>
+  <tbody>
+
+  <?php
+
+  $count=1;
+  
+          $args = array(
+        'type' => 'period',
+        'status' =>'publish',
+      );
+      $periods = get_posts($args);
+foreach($periods as $period){ 
+   $from=get_metadata($period->id,'from')[0]->meta_value;
+ $to=get_metadata($period->id,'to')[0]->meta_value;
+  ?>
+<tr>
+    <td><?=$count++?></td>
+    <td><?=$period->title?></td>
+    <td><?php echo date('h:i A',strtotime($from)) ?> </td>
+    <td><?php echo date('h:I A',strtotime($to)) ?></td>
+<?php } ?>
+</td>
+</td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>     
+        </div> 
+        <!-- /.row -->
+
+
+      </div><!--/. container-fluid -->
+
+
+
+   
+
+
+
+       
+    </section>
+<?php include('footer.php')?>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!-- saved from url=(0102)https://ewaybillgst.gov.in/BillGeneration/EBPrint.aspx?ewb_no=451568113282&cal=1&Trans=07AALFD0866E1ZI -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>
+	E-Way Bill System
+</title><link rel="icon" href="https://docs.ewaybillgst.gov.in/assets/img/favicon.ico" type="image/x-icon">
+
+    <!-- CSS Files-->
+    <link href="./E-Way Bill System_files/bootstrap.min.css" rel="stylesheet"><link href="./E-Way Bill System_files/font-awesome.min.css" rel="stylesheet"><link href="./E-Way Bill System_files/themify-icons.css" rel="stylesheet"><link href="./E-Way Bill System_files/jquery-ui.css" rel="stylesheet">
+
+    <!-- THEME STYLES-->
+    <link href="./E-Way Bill System_files/main.min.css" rel="stylesheet">
+
+    <!-- Datatables css -->
+    <link href="./E-Way Bill System_files/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- CORE PLUGINS-->
+
+    <!-- JS here -->
+    <!-- Core Jquery,  Core Bootstrap -->
+    <script src="./E-Way Bill System_files/jquery.min.js.download" type="text/javascript"></script>
+    <script src="./E-Way Bill System_files/popper.min.js.download" type="text/javascript"></script>
+    <script src="./E-Way Bill System_files/bootstrap.min.js.download" type="text/javascript"></script>
+    <script src="./E-Way Bill System_files/jquery-ui.min.js.download" type="text/javascript"></script>
+    <script src="./E-Way Bill System_files/metisMenu.min.js.download" type="text/javascript"></script>
+    <script src="./E-Way Bill System_files/jquery.slimscroll.min.js.download" type="text/javascript"></script>
+
+    <!-- CORE SCRIPTS-->
+    <script src="./E-Way Bill System_files/app.min.js.download" type="text/javascript"></script>
+
+    <!-- Datatables css -->
+    <script src="./E-Way Bill System_files/jquery.dataTables.min.js.download" type="text/javascript"></script>
+    <script src="./E-Way Bill System_files/dataTables.bootstrap4.min.js.download" type="text/javascript"></script>
+ 
+    <script type="text/javascript">
+        $(document).ready(function () { });
+        $(document).keydown(function (event) {
+            if (event.keyCode == 123) {
+                return false;
+            }
+            else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
+                return false;
+            }
+        });
+        $(document).on("contextmenu", function (e) {
+            e.preventDefault();
+        });
+    </script>
+
+    
+    
+
+    <script type="text/javascript" src="./E-Way Bill System_files/qrcode.js.download"></script>
+    <script type="text/javascript" src="./E-Way Bill System_files/jquery-barcode.min.js.download"></script>
+   
+     <link href="./E-Way Bill System_files/Print.css" rel="stylesheet" media="print">
+
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            generatebarcode();
+            generateQRCode();
+        });
+        function generateQRCode() {
+
+            var typeNumber = 4;
+            var errorCorrectionLevel = 'L';
+            var qr = qrcode(typeNumber, errorCorrectionLevel);
+            qr.addData(document.getElementById('qrCodeGen').value);
+            qr.make();
+            document.getElementById('plBarCodeNew').innerHTML = qr.createImgTag(4, 2);
+        }
+        function generatebarcode() {
+            $(".barcode").barcode(document.getElementById('barcodeGen').value, "code128");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function expandtext(expand) {
+            while (expand.rows > 1 && expand.scrollHeight < expand.offsetHeight) {
+            }
+        }
+    </script>
+
+
+
+</head>
+<body class="has-animation">
+    <form name="aspnetForm" method="post" action="https://ewaybillgst.gov.in/BillGeneration/EBPrint.aspx?ewb_no=451568113282&amp;cal=1&amp;Trans=07AALFD0866E1ZI" id="aspnetForm" autocomplete="off">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="JFHjcy4UXaeZDuO6TlP5MfRYSK/nuAzudgMwp+5Vay/vWdyLmqCwbOBXcmY7fUP2da6+5ol/VnGFzCd5ZaH9oyuOHi1l5P0HInPKwtlbH3xS4KuF1mfW7ujlHXXtFFQb6SQsVhEsnAELO1vqwDhgOLpkEI0j78KaUb/3CpnvwiH4nbUU6AvN+k4mEdS+v81yr6DRu0xB+OCZLLT/UUSDo0tanWSbEeYaeTrupnMecIHU24+UQ5JUFVa9+Nex6erKhY1EZwW+P4z771grahc2U5VpNsqAyVHw4Nz387gt0njwC8Ju2GjaAY40fOXfOC9cVCFFEPofxWt0t+Jf6DoYzG5HusdtJ5kH21409/a7RkkyoEUgaDlj1fERxFuDRb6qCxOB05ozCvvaNoFQ3hAvz7E+hT6ZWYYxSEw0ojFlw8E65j7pud8hhz7YuhXNH1rx58zM4BoG8buF1cAiiwezdHMtAIPEEdMLLrzR4Jhs7JVv/1DgNi+Tm5cbou0EnZhRS3gAyb0FKYoweM6lCPCuWMKmLyMWUrZ8MOvp3tCQQjU868MB/GasEFelbJF9T7OWvMKM2SlSTEZSC6akd6uXMlP2LVknTEgPRuqug2PmtjH8Tts+i5qDmtTjmi/QVyO5wLHWrJygBGeolH+zf04uf7OL6WCyRLGYUDtmKXQOneczaX4ZMnY4HOzV5+jrI/MlArG2YlPkFplA3lygv+AlJ+ctRhsIzawcPV7p3ta9mKu4SOXIPvmEKREXHW3MDom2s1N3W6qs1VCif1nk+d7g4mCIePAVjqTEjbcZPUnzOyRev+PypTGXI/USDxWtTlwFcnKUIxhDzZ1yRpL3QicuxHPmWyLmmXvbUiu14bukWn+LUZY8Za07gzY6tGUZZywSE1MEUDHHevV4ansmQ5AyOQ9vbHi/g2gJgPvaxJzG8CVXt1Py3fb+9WtxeguhKI9TZy72FCsR31LGWi5VVkAFGO11OPnEF0ButHqPI2scGD5dPoIynASwHJlloVa5FIs5Iea84jX+qXAepYPuqI/mMZukekrGwjLpUT2m40CybtVUU155hYWLRV04fw2R0zPSC2D0ErcjUezMFFex9k00YNtOAT0zVjKiEssAOzmyyhFoWNizDDvj7Ej7mP0oWpf3hQK1Yiynl11RI0nObHM4da8+fmk8PZ43VkIFPV/5UKjMTdgeRu+wUvkRJ1ve8eQqXvUZK0vDFhKPpRH88od23E15vlSf7mJyKvceewTG984k1YKIBjNjJEn6UDTuhjbmnxOG4kPcuWkh+8QIPfwdmG8GdXlYB2TKs7pYa1X50QMStLyzMb4rwBBfjuJ15qlnUOGGrnZjcReKQBVIi4wXqDxZouXmhWvcBzMQZy/RRBTpN39EpQyWoF/c2tmBcJps17wiGjlJvxwKCZqZlI5HUXTfXUnA/AWaxC2kuCNH1hA6t3bQqJ2bKIc0OAwQYOLudMLe85MBpGr0+F1tAm/RGjRzMCgNZGPoFuDzWFrkjhYwchBclrU5IXXuG+gGtlEgCG6gM3z5yhO5PIxvAZkjIr0cR2Sz1RZi+qFZxblqpQJb3iHZ/f4JX4w9Eugrjg3k1lQ+2XVWf+zyS+kSml1iULptc713ZsO9TcGZ/MHBkDLrUCBwvSgvdsAmRjuhX/4XoyyGC5jZg8td0RLQCdlb4eEfolkXaHjHRMahHte6Xu4Kt/CVOakPJUQ2eegHW5woYtHSfflC4jgjL6NnISvwSH/dAqv7uHATJfNhrm2l6ipSU0TtLtoE4oU683j6e5THz1qr7eZDfdysPR4fStmp+Z0sLQepplVnOpmj/Hkq/tfGP/nP8Eww9YqbSh5deQcfpTLDebDJo5QyCyYhCboaIQ==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./E-Way Bill System_files/WebResource.axd" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+javascript:generateQRCode();//]]>
+</script>
+
+<script src="./E-Way Bill System_files/ScriptResource.axd" type="text/javascript"></script>
+<script src="./E-Way Bill System_files/ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="E7FD9D6A">
+	<input type="hidden" name="__SCROLLPOSITIONX" id="__SCROLLPOSITIONX" value="0">
+	<input type="hidden" name="__SCROLLPOSITIONY" id="__SCROLLPOSITIONY" value="0">
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="MTG0+6XD6N8KoBHAntheAHzK9qZIEJtBDsYX0S8pzemDqP0GRisikvf+0V3ASecDjoZbRNg1fGv45bbHrbXqTIyrnzefNbJGhqKEUjse2aYJwwajVp0XUGqftl/SXiQ4ak0SLcoqXirbvsg8jQl8xLiK4uJxZD5v4f8oql6EyF8zGI+9kedYQ3MFDm06CQxMtfTQX5LRcF6+d5Ofgb7jD+UmsO+Jizvzx00zEkylfnbis/FgContEBXJlesNQdNyuCWkRLrUFYsxJAAkWdNIWG7CtTH6CLR+wJy8YsZ5+Pw=">
+</div>
+      
+
+        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager1', 'aspnetForm', [], [], [], 90, 'ctl00');
+//]]>
+</script>
+
+
+        <div class="page-wrapper">
+
+            
+                <!-- START HEADER-->
+                <header class="header">
+                    <div class="page-brand brandexceptmainmenu">
+                        <ul class="nav navbar-toolbar">
+                            <li>
+                                <a class="nav-link sidebar-toggler js-sidebar-toggler"><i class="ti-menu"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="flexbox flex-1">
+                        <a class="link form-inline brandlink p-0" href="https://ewaybillgst.gov.in/BillGeneration/EBPrint.aspx?ewb_no=451568113282&amp;cal=1&amp;Trans=07AALFD0866E1ZI#">
+                            <img src="./E-Way Bill System_files/ind.png" alt="Emblem" style="border-width:0px;">
+                            <p class="logobrand">
+                                Goods and Services Tax 
+                            <br>
+                                <span class="brand-tip">e - Way Bill System</span>
+                            </p>
+                            
+                        </a>
+
+                        <!-- START TOP-RIGHT TOOLBAR-->
+                        <ul class="nav navbar-toolbar p-0">
+
+                            <li class="dropdown dropdown-inbox">
+                                <img src="./E-Way Bill System_files/Gstlogo.png" alt="GST Logo" style="border-width:0px;">
+
+                            </li>
+                            <li class="dropdown dropdown-inbox">
+                                <img src="./E-Way Bill System_files/nic-logo.png" alt="NIC Logo" style="border-width:0px;">
+                            </li>
+
+                            <li class="dropdown dropdown-user">
+                                <a class="nav-link dropdown-toggle link p-0" data-toggle="dropdown">
+                                    <img src="./E-Way Bill System_files/admin-avatar.png" alt="Profile" style="border-width:0px;">
+                                    </a><ul class="dropdown-menu dropdown-menu-right"><a class="nav-link dropdown-toggle link p-0" data-toggle="dropdown">
+                                        </a><a class="dropdown-item" data-toggle="modal" data-target="#profile"><i class="fa fa-user"></i>Profile</a>
+                                        <li class="dropdown-divider"></li>
+                                        <a id="ctl00_headercont_LinkButton1" class="dropdown-item" href="javascript:__doPostBack(&#39;ctl00$headercont$LinkButton1&#39;,&#39;&#39;)"><i class="fa fa-power-off"></i>Logout</a>
+                                    </ul></li>
+                        </ul>
+
+                        <!-- END TOP-RIGHT TOOLBAR-->
+                    </div>
+
+                </header>
+                <!-- END HEADER-->
+
+                <div id="ctl00_headercont_headerbottom" class="container-fluid modultitle" style="width: 100%;">
+                    <div class="row">
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                            <ul class="nav navbar-nav navbarmodultitle" style="display:inline">
+                                <li class="mr-2"><a id="ctl00_headercont_lnk_home" href="https://ewaybillgst.gov.in/mainmenu.aspx"><i class="fa fa-home"></i></a></li>
+                                <li><a id="ctl00_headercont_lnk_eInv" class="btn btn-sm btn-info py-0" href="https://ewaybillgst.gov.in/eInvoiceRedirect.aspx"><i class="fa fa-globe"></i><span class="font-14"> e-Invoice Portal</span></a></li>
+                            </ul>
+                        </div>
+
+                        <div class="col-6 col-sm-6 col-md-5 col-lg-6 p-0 m-auto text-center">
+                            <span id="ctl00_headercont_user_log_details" class="userlogdetails">GSTIN :09AAUPM2610G1ZL - Name : ANUJ UDYOG - User : Tax Payer</span>
+                        </div>
+
+                        <div class="col-12 col-sm-12 col-md-3 col-lg-3 text-right">
+                            <ul class="nav navbar-nav navbarmodultitle float-right" style="display: inline">
+                                <li class="dropdown pr-3">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="https://ewaybillgst.gov.in/BillGeneration/EBPrint.aspx?ewb_no=451568113282&amp;cal=1&amp;Trans=07AALFD0866E1ZI#"><i class="fa fa-question-circle"></i></a>
+                                    <ul class="dropdown-menu helpsection">
+                                        <li><a href="https://docs.ewaybillgst.gov.in/Documents/Generating%20EWB.pdf" target="_blank" rel="noopener noreferrer">Generating EWB</a></li>
+                                        <li><a href="https://docs.ewaybillgst.gov.in/Documents/Generating%20CEWB.pdf" target="_blank" rel="noopener noreferrer">Generating CEWB</a></li>
+                                        <li><a href="https://docs.ewaybillgst.gov.in/Documents/Modes%20of%20EWB%20generation.pdf" target="_blank" rel="noopener noreferrer">Modes of EWB generation</a></li>
+                                        <li><a href="https://docs.ewaybillgst.gov.in/Documents/Rejecting%20EWB.pdf" target="_blank" rel="noopener noreferrer">Rejecting EWB</a></li>
+                                        <li><a href="https://docs.ewaybillgst.gov.in/Documents/Managing%20Users.pdf" target="_blank" rel="noopener noreferrer">Managing Users</a></li>
+                                        <li><a href="https://docs.ewaybillgst.gov.in/Documents/Managing%20Masters.pdf" target="_blank" rel="noopener noreferrer">Managing Masters</a></li>
+                                    </ul>
+                                </li>
+                                <li style="display: none"><a href="https://ewaybillgst.gov.in/BillGeneration/EBPrint.aspx?ewb_no=451568113282&amp;cal=1&amp;Trans=07AALFD0866E1ZI#" class="glyphicon glyphicon-phone-alt" data-toggle="modal" data-target="#contact"><i class="fa fa-phone"></i></a></li>
+                                <li>
+                                    <a id="ctl00_headercont_lnk_Signout" href="javascript:__doPostBack(&#39;ctl00$headercont$lnk_Signout&#39;,&#39;&#39;)"><i class="fa fa-sign-out"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            
+
+            
+    <div class="container">
+
+        <div class="row justify-content-center align-items-center">
+            <div class="card col-xl-8 col-lg-10 col-md-12 col-sm-12 col-12 mt-3 px-2 printcard border-0">
+
+                
+
+                <table class="table border-0 mt-0 mb-0">
+                    <tbody><tr>
+                        <td colspan="2" class="py-0" style="border-top:0px">
+                            <input name="ctl00$ContentPlaceHolder1$mytoken" type="hidden" id="mytoken" value="84519cf3-6d39-473f-81b9-1e41555fb796">
+                            <input name="ctl00$ContentPlaceHolder1$qrCodeGen" type="hidden" id="qrCodeGen" value="451568113282/09AAUPM2610G1ZL/5/15/2025 1:55:00 PM">
+                            <input name="ctl00$ContentPlaceHolder1$barcodeGen" type="hidden" id="barcodeGen" value="451568113282">
+                            <input type="hidden" name="ctl00$ContentPlaceHolder1$Hdn_Transgstin" id="ctl00_ContentPlaceHolder1_Hdn_Transgstin" value="07AALFD0866E1ZI">
+                            <input name="ctl00$ContentPlaceHolder1$seldt" type="hidden" id="seldt">
+
+                            <table id="ctl00_ContentPlaceHolder1_QRcode" class="QRHeader mx-auto border-0">
+	<tbody><tr id="ctl00_ContentPlaceHolder1_tr_title">
+		<td class="text-center" style="border-top:0px">
+                                        <h3 class="mb-0 font-weight-bold">
+                                            <span id="ctl00_ContentPlaceHolder1_lbl_title">Part - A Slip</span>
+                                        </h3>
+                                    </td>
+	</tr>
+</tbody></table>
+
+                        </td>
+                    </tr>
+
+                    
+                </tbody></table>
+
+                <div class="table-responsive-lg mr-3">
+                    <table id="ctl00_ContentPlaceHolder1_table_details" class="table table-bordered mb-1 mt-1">
+	<tbody><tr>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblBillNo">Unique No.</span></td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblBillNoDetails" style="font-size:18px;font-weight:bold;"> 4515  6811  3282</span></td>
+	</tr>
+	<tr>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblGenDate">Entered Date</span></td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblGenDateDetails" style="font-weight:bold;">15/05/2025 01:55 PM</span></td>
+	</tr>
+	<tr>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lglGen">Entered By</span>
+                            </td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblGenDetails" style="font-weight:bold;"> 09AAU  PM261  0G1ZL   -   AMIT KUMAR MITTAL</span></td>
+	</tr>
+	<tr id="ctl00_ContentPlaceHolder1_validate">
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_Label1">Valid From:</span>
+                            </td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblValidFrom" style="font-weight:bold;">Not Valid for Movement as Part B is not entered [2419Kms]</span></td>
+	</tr>
+	<tr class="bg-primary text-white font-weight-bold">
+		<td colspan="2">Part - A</td>
+	</tr>
+	<tr>
+		<td>GSTIN of Supplier</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lbl_gstnSupplier" style="font-weight:bold;">09AAUPM2610G1ZL,ANUJ UDYOG</span></td>
+	</tr>
+	<tr>
+		<td>Place of Dispatch</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lbl_placeDispatc" style="font-weight:bold;">,UTTAR PRADESH-245304</span></td>
+	</tr>
+	<tr>
+		<td>GSTIN of Recipient</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_txtSypplyTo" style="font-weight:bold;"> 33BIF  PB024  9A1Z7
+,chitra textiles erode</span>
+                            </td>
+	</tr>
+	<tr>
+		<td>Place of Delivery</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblDeli"><span style="font-weight:bold;">,TAMIL NADU-638001 </span> </span></td>
+	</tr>
+	<tr>
+		<td>Document No.</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblDocDet"><span style="font-weight:bold;">25-26/45 </span> </span></td>
+	</tr>
+	<tr>
+		<td>Document Date</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblDocDt"><span style="font-weight:bold;">15/05/2025 </span> </span></td>
+	</tr>
+	<tr>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_Label3">Transaction Type:</span>
+                            </td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblTransType" style="font-weight:bold;">Regular</span></td>
+	</tr>
+	<tr>
+		<td>Value of Goods</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblVG" class="classfont" style="font-weight:bold;">94500</span></td>
+	</tr>
+	<tr>
+		<td>HSN Code</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblhsncode" class="form-control1" onkeydown="expandtext(this);" style="font-weight:bold;">6304 -  </span></td>
+	</tr>
+	<tr>
+		<td>Reason for Transportation</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblTypeDetails" style="font-weight:bold;">Outward  -  Supply</span></td>
+	</tr>
+	<tr>
+		<td>Transporter</td>
+		<td>
+                                <span id="ctl00_ContentPlaceHolder1_lblTransportor" style="font-weight:bold;">07AALFD0866E1ZI   &amp;   DELHI BANGALORE ROADLINK</span></td>
+	</tr>
+	<tr id="ctl00_ContentPlaceHolder1_trbarcdoe">
+		<td colspan="2" class="text-center">
+                                <div id="barcode" class="barcode mx-auto" style="padding: 0px; overflow: auto; width: 121px;"><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 10px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 3px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 3px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 3px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 4px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 2px"></div><div style="float: left; font-size: 0px; width:0; border-left: 4px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 3px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 3px"></div><div style="float: left; font-size: 0px; width:0; border-left: 3px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 1px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 1px"></div><div style="float: left; font-size: 0px; width:0; border-left: 2px solid #000000; height: 50px;"></div><div style="float: left; font-size: 0px; background-color: #FFFFFF; height: 50px; width: 10px"></div><div style="clear:both; width: 100%; background-color: #FFFFFF; color: #000000; text-align: center; font-size: 10px; margin-top: 5px;">451568113282</div></div>
+                            </td>
+	</tr>
+	<tr id="ctl00_ContentPlaceHolder1_printtr" class="printbtntr">
+		<td colspan="2" class="text-center">
+                            <a href="Javascript:window.print()" class="btn btn-primary btnprint;">Print</a>
+                       
+                                
+           
+                                <a href="https://ewaybillgst.gov.in/Mainmenu.aspx" class="btn btn-danger btnprint">Exit</a>
+                            </td>
+	</tr>
+	<tr>
+		<td colspan="2" class="text-left">
+                                <span id="ctl00_ContentPlaceHolder1_lblNoteewb2" style="font-size: 10px;">Note*: If any discrepancy in information please try after sometime.</span></td>
+	</tr>
+</tbody></table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+            
+
+                <footer class="page-footer">
+                    <div class="font-13 text-white text-sm-center text-center">Ver 1.4.0 Rel 0720 </div>
+                    <a class="px-4 text-white text-sm-center text-center" href="https://www.nic.in/" target="_blank">©2022 Powered By National Informatics Centre</a>
+                    <div class="to-top" style="display: block;"><i class="fa fa-angle-double-up"></i></div>
+                </footer>
+            
+        </div>
+
+        <div class="modal" id="contact" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            ×</button>
+                        <h4 class="modal-title">Contact Details</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-condensed table-hover table-responsive-lg">
+                            <tbody><tr>
+                                <td>State</td>
+                                <td>
+                                    <span id="ctl00_lblState"></span></td>
+                            </tr>
+                            <tr>
+                                <td>Contact No</td>
+                                <td>
+                                    <textarea name="ctl00$lblContactNo" rows="2" cols="20" readonly="readonly" id="ctl00_lblContactNo" style="border-style:None;height:100px;"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>
+                                    <span id="ctl00_lblEmail"></span></td>
+                            </tr>
+                        </tbody></table>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+
+theForm.oldSubmit = theForm.submit;
+theForm.submit = WebForm_SaveScrollPositionSubmit;
+
+theForm.oldOnSubmit = theForm.onsubmit;
+theForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;
+//]]>
+</script>
+</form>
+
+
+</body></html>

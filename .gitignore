@@ -36,3 +36,11 @@ docs_html/
 TODO
 test.html
 ad.js
+
+/vendor/
+/AdminLTE-3.05/admin/uploads/
+*.pdf
+*.xls
+*.jpg
+*.png
+composer.lock

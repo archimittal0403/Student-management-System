@@ -11,8 +11,9 @@ include('header.php')
             <div class="card-body">
                 <div class="card px-2"> 
                     <div class="text-center my-1"><span class="fa-stack fa-lg">
-                        <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-user fa-stack-1x text-light"></i>   
+                        <!-- <i class="fa fa-circle fa-stack-2x"></i> -->
+                        <!-- <i class="fa fa-user fa-stack-1x text-light"></i>  -->
+                         <img src="./assest/images/akg-logo.png" alt=""  width="50" height="50">  
 </span></div>     
                 <form action="actions/login.php" method="POST">
                     <div class="form-group">

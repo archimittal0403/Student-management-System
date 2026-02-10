@@ -52,32 +52,6 @@ include('header.php')
 <p>This is a student manangement system portal with various blocks.</p>
 <a href="" class="btn btn-md btn-primary px-3 py-2"><p class="my-1">Call to Action</p></a>
 </div>
-<!-- <div class="col-lg-6">
-  <div class="w-50 m-auto card">
-    <div class="card-body">
-      <h3>Admisssion form</h3>
-      <form action="" method="post">
-
-    <div class="md-form mt-1.2">
-  <input type="text" id="form1" class="form-control" />
-  <label for="form1">Your Name</label>
-</div> -->
-
-<!-- <div class="md-form mt-1.2">
-  <input type="email" id="email" class="form-control" />
-  <label for="email">Your email</label>
-</div> -->
-
-<!-- <div class="md-form mt-1.2">
-  <input type="text" id="mobile" class="form-control" />
-  <label for="mobile">Your mobile</label>
-</div> -->
-
-<!-- <div class="md-form mt-1.2">
-  <input type="text" id="class" class="form-control" />
-  <label for="class">Your class</label>
-</div> -->
-<!-- <button class="btn btn-dark btn-block mt-3">Submit form </button> -->
 </form>
 </div>
 </div>

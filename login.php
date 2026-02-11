@@ -5,6 +5,13 @@ include('header.php')
 session_start();  // MUST have this to use $_SESSION['CODE']
 include('includes/config.php'); // or wherever your DB config is
 ?>
+<?php
+if(isset($_SESSION['error_msg'])){
+    echo "<div class='alert alert-danger'>".$_SESSION['error_msg']."</div>";
+    unset($_SESSION['error_msg']); // remove after showing
+}
+?>
+
 
 <section class=" py-2 bg-light vh-100 d-flex">
 
@@ -18,7 +25,7 @@ include('includes/config.php'); // or wherever your DB config is
                         <!-- <i class="fa fa-user fa-stack-1x text-light"></i>  -->
                          <img src="./assest/images/akg-logo.png" alt=""  width="50" height="50">  
 </span></div>     
-                <form action="actions/login.php" method="POST">
+                <form action="AdminLTE-3.05/admin/send_otp.php" method="POST">
                     <div class="form-group">
                         <h5 class="mx-2">Email</h5>
                     <input type="email" id="email" name="email" class="form-control my-3 mx-1" placeholder="Enter your email">
@@ -31,15 +38,16 @@ include('includes/config.php'); // or wherever your DB config is
                  
 </div>
 
+
  <div class="form-outline mb-4">
         <label for="user_username" class="form-label">Enter the Captcha Code</label>
         <input type="text"  class="form-control" placeholder="Enter your captcha" autocomplete="off" required="required" name="captcha" id="captcha"/>
 </div>
 
 <div><img src="captcha.php"><a href="" class="mx-3">Refresh</a></div> 
-<div class="text-center">
-<button class="btn btn-primary mb-3 px-4" name="login">Login</button>
-</div>
+
+<input type="submit" class="bg-success ..." name="user_otp" value="send otp">
+<button class="btn btn-primary" name="user_otp">Login</button>
 </form>
 
 </div>

@@ -12,6 +12,15 @@ if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
     exit();
 }
 
+if (isset($_POST['send_otp'])) {
+    // अगर user ने send OTP क्लिक किया
+    $_SESSION['email'] = $_POST['email'];  // email save कर लो session में
+
+    // redirect to your send-otp.php
+    header("Location: ../AdminLTE-3.05/admin/send_otp.php");
+    exit();
+}
+
 if (isset($_POST['login'])) {
      // 1. CAPTCHA check
     if (!isset($_POST['captcha']) || $_POST['captcha'] != $_SESSION['CODE']) {
@@ -20,6 +29,7 @@ if (isset($_POST['login'])) {
     }
     $email = trim($_POST['email']);
     $pass  = $_POST['password'];
+    $user_otp=$_POST['user_otp'];
 
     if (empty($email) || empty($pass)) {
         echo "Email and Password are required!";
@@ -29,8 +39,8 @@ if (isset($_POST['login'])) {
     $pass_md5 = md5($pass); // keep as MD5 for now
 
     // Prepared statement (safe)
-    $stmt = $con->prepare("SELECT * FROM `accounts` WHERE `email` = ? AND `password` = ?");
-    $stmt->bind_param("ss", $email, $pass_md5);
+    $stmt = $con->prepare("SELECT * FROM `accounts` WHERE `email` = ? AND `password` = ? AND user_otp= ?");
+    $stmt->bind_param("sss", $email, $pass_md5,$user_otp);
     $stmt->execute();
     $result = $stmt->get_result();
 

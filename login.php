@@ -1,7 +1,10 @@
 <?php
 include('header.php')
 ?>
-
+<?php
+session_start();  // MUST have this to use $_SESSION['CODE']
+include('includes/config.php'); // or wherever your DB config is
+?>
 
 <section class=" py-2 bg-light vh-100 d-flex">
 
@@ -27,6 +30,13 @@ include('header.php')
                     <input type="password" id="password" name="password" class="form-control mx-1 mb-4" placeholder="Enter your email">
                  
 </div>
+
+ <div class="form-outline mb-4">
+        <label for="user_username" class="form-label">Enter the Captcha Code</label>
+        <input type="text"  class="form-control" placeholder="Enter your captcha" autocomplete="off" required="required" name="captcha" id="captcha"/>
+</div>
+
+<div><img src="captcha.php"><a href="" class="mx-3">Refresh</a></div> 
 <div class="text-center">
 <button class="btn btn-primary mb-3 px-4" name="login">Login</button>
 </div>

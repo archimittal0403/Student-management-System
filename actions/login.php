@@ -1,36 +1,70 @@
 <?php
+session_start();
 include('./includes/config.php');
-if (isset($_POST['login'])){
-    $email=$_POST['email'];
-    $pass=$_POST['password'];
 
-    $pass_md5 = md5($pass);
+$site_url = 'http://localhost/student management/AdminLTE-3.05/';
 
-    $query=mysqli_query($con,"SELECT * FROM `accounts` WHERE  `email` ='$email' AND `password`='$pass_md5'");
+// If already logged in, redirect to dashboard
+if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
+    $folder = $_SESSION['user_type'] ?? 'admin';
+    $folder = ($folder == 'admin') ? 'admin' : $folder;
+    header("Location: {$site_url}{$folder}/dashboard.php");
+    exit();
+}
 
-    if(mysqli_num_rows($query)>0)
-    {
-        $user = mysqli_fetch_object($query);
-        $_SESSION['login'] =true;
-        $_SESSION['session_id'] =uniqid();
-        $user_type=$user->type;
-$_SESSION['user_type'] = $user_type;
-//$user_id=$user->id;
-$_SESSION['user_id']=$user->id;
-// if($user_type == 'admin'){
-//         header('Location: ../AdminLTE-3.05/'.$user_type.'/dashboard.php');
-// }
-//else{
-    header('Location: ../AdminLTE-3.05/'.$user_type.'/admin/dashboard.php');
-//}
+if (isset($_POST['login'])) {
+     // 1. CAPTCHA check
+    if (!isset($_POST['captcha']) || $_POST['captcha'] != $_SESSION['CODE']) {
+        echo "Invalid CAPTCHA code!";
+        exit;
+    }
+    $email = trim($_POST['email']);
+    $pass  = $_POST['password'];
+
+    if (empty($email) || empty($pass)) {
+        echo "Email and Password are required!";
+        exit;
+    }
+
+    $pass_md5 = md5($pass); // keep as MD5 for now
+
+    // Prepared statement (safe)
+    $stmt = $con->prepare("SELECT * FROM `accounts` WHERE `email` = ? AND `password` = ?");
+    $stmt->bind_param("ss", $email, $pass_md5);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_object();
+
+        // Set session
+        $_SESSION['login']      = true;
+        $_SESSION['session_id'] = uniqid();
+        $_SESSION['user_type']  = $user->type;
+        $_SESSION['user_id']    = $user->id;
+        $_SESSION['college_id'] = (int)$user->college_id;
+
+        // Redirect to dashboard
+        $folder = ($user->type == 'admin') ? 'admin' : $user->type;
+        header("Location: {$site_url}{$folder}/dashboard.php");
         exit();
     }
-    else if($email=='admin@example.com' && $pass=='admin@sms'){
-    session_start();
-$_SESSION['login'] =true;
-header('Location: ../AdminLTE-3.05/admin/dashboard.php');
+    else if ($email == 'admin@example.com' && $pass == 'admin@sms') {
+        // Optional super admin
+        $_SESSION['login'] = true;
+        $_SESSION['user_type'] = 'admin';
+        header("Location: {$site_url}admin/dashboard.php");
+        exit();
+    }
+    else {
+        echo "Invalid credentials!";
+    }
 }
-else{
-    echo 'invalid crediantial';
-}
-}
+?>
+
+<!-- Simple HTML login form -->
+<form method="post" action="">
+    <input type="email" name="email" placeholder="Email" required /><br><br>
+    <input type="password" name="password" placeholder="Password" required /><br><br>
+    <button type="submit" name="login">Login</button>
+</form>

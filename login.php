@@ -46,8 +46,11 @@ if(isset($_SESSION['error_msg'])){
 
 <div><img src="captcha.php"><a href="" class="mx-3">Refresh</a></div> 
 
-<input type="submit" class="bg-success ..." name="user_otp" value="send otp">
+<!-- <input type="submit" class="bg-success ..." name="user_otp" value="send otp"> -->
 <button class="btn btn-primary" name="user_otp">Login</button>
+
+<a href="AdminLTE-3.05/admin/reset.php"> Reset Password</a>
+</form>
 </form>
 
 </div>

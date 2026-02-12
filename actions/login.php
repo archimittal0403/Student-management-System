@@ -63,6 +63,7 @@ if (isset($_POST['login'])) {
         // Optional super admin
         $_SESSION['login'] = true;
         $_SESSION['user_type'] = 'admin';
+          $_SESSION['college_id'] =1;
         header("Location: {$site_url}admin/dashboard.php");
         exit();
     }
@@ -71,9 +72,8 @@ if (isset($_POST['login'])) {
     }
 }
 ?>
-
 <!-- Simple HTML login form -->
-<form method="post" action="">
+<form method="post" action="actions/login.php">
     <input type="email" name="email" placeholder="Email" required /><br><br>
     <input type="password" name="password" placeholder="Password" required /><br><br>
     <button type="submit" name="login">Login</button>

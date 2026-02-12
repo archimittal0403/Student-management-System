@@ -4,26 +4,19 @@
 //include('includes/function.php');
 session_start();
 ?> 
+
 <?php
-
-
-// check session
-if(isset($_SESSION['email'])){
-    echo "Session email: " . $_SESSION['email'];
-} else {
-    echo "Session email is not set!";
-}
-
-// for debugging more details
-var_dump($_SESSION);
-?>
-<?php
-
-
+// Form submit check
 if(isset($_POST['verify_otp'])){
-    $user_otp = trim($_POST['user_otp']);
-    $user_email = $_SESSION['email']; // assume email session me store hai jab OTP bheja
 
+    // Ensure email session exists
+    if(!isset($_SESSION['email'])){
+        header("Location: login.php?msg=Session expired");
+        exit();
+    }
+
+    $user_otp = trim($_POST['user_otp']);
+    $user_email = $_SESSION['email'];
 
     // DB query to check OTP
     $stmt = $con->prepare("SELECT * FROM accounts WHERE email=? AND user_otp=?");
@@ -33,27 +26,27 @@ if(isset($_POST['verify_otp'])){
 
     if($result->num_rows > 0){
         // OTP correct
-        $_SESSION['login'] = true;
-        // OTP use hone ke baad database me delete ya expire kar do
-        $stmt2 = $con->prepare("UPDATE `accounts` SET user_otp=NULL WHERE email=?");
+       $user = $result->fetch_assoc();  
+        $_SESSION['login'] = true;         // MUST
+        $_SESSION['user_type'] = 'admin';  // ya jo type hai DB me
+      
+        $_SESSION['user_id'] = $result->fetch_assoc()['id']; // optional
+          $_SESSION['college_id'] = $user['college_id'];   // 🔥 ADD THIS
+        // delete OTP
+        $stmt2 = $con->prepare("UPDATE accounts SET user_otp=NULL WHERE email=?");
         $stmt2->bind_param("s", $user_email);
         $stmt2->execute();
-          if(isset($_SESSION['error_msg'])){
-            unset($_SESSION['error_msg']);
-        }
 
-        header('Location: dashboard.php');
-       
+        header("Location: dashboard.php");  // redirect
         exit();
     } else {
-        $_SESSION['error_msg'] = 'Invalid OTP';
-        header('Location: login.php');
+        $_SESSION['error_msg'] = "Invalid OTP";
+        header("Location: login.php");
         exit();
     }
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

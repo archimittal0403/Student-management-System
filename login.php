@@ -51,7 +51,7 @@ if(isset($_SESSION['error_msg'])){
 
 <a href="AdminLTE-3.05/admin/reset.php"> Reset Password</a>
 </form>
-</form>
+
 
 </div>
 </div>

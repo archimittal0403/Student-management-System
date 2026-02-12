@@ -1,41 +1,13 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  
-</body>
-</html>
-
-<!-- REQUIRED SCRIPTS -->
-<!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- overlayScrollbars -->
-<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
- <link rel="stylesheet" href="lib/datatables/dataTables.css">
-    <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.3.4/b-3.2.5/b-html5-3.2.5/b-print-3.2.5/datatables.min.css" rel="stylesheet" integrity="sha384-3NmgQnb9Cg8D3QqL04ch4hq5IlqNldGzDdC19PORW6oE9nP1nsYxj4c59VE3MHjm" crossorigin="anonymous">
-
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.js"></script>
-
-<!-- OPTIONAL SCRIPTS -->
-<script src="dist/js/demo.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <?php
+//session_start();
  include('includes/config.php');
  include('includes/functions.php');
 ?> 
+
 <?php
 
  if(isset($_POST['type']) && $_POST['type'] == 'student' && isset($_POST['email']) && !empty($_POST['email'])){
-
-
       $name = isset($_POST['name'])?$_POST['name']:'';
     $dob = isset($_POST['dob'])?$_POST['dob']:'';
     $mobile = isset($_POST['mobile'])?$_POST['mobile']:'';
@@ -45,7 +17,7 @@
    $state = isset($_POST['state'])?$_POST['state']:'';
    $zip = isset($_POST['pincode'])?$_POST['pincode']:'';
  $password = date('dmY',strtotime($dob));
-     $md_password = md5($password);
+     $md_password = password_hash($password,PASSWORD_DEFAULT);
     
 
                   $father_name =isset($_POST['father_name'])?$_POST['father_name']:'';  
@@ -74,16 +46,39 @@
                       $date_added =date('Y-m-d');
                            $payment_method=isset($_POST['payment_method'])?$_POST['payment_method']:'';
                      
-   $check_query=mysqli_query($con,"SELECT * FROM accounts WHERE email='$email'");
-       if(mysqli_num_rows($check_query)>0){
-      echo 'Email already exist';die;
+   $check_query=$con->prepare("SELECT id FROM accounts WHERE email=? AND college_id=?");
+   $check_query->bind_param("si",$email,$_SESSION['college_id']);
+   $check_query->execute();
+$result=$check_query->get_result();
+       if($result->num_rows>0){
+    echo json_encode([
+  'success' => false,
+  'message' => 'Email already exists'
+]);
+exit;
        }
      else{
+session_start();
+    $college_id = $_SESSION['college_id'];
 
-     $query=mysqli_query($con,"INSERT INTO accounts (`name`,`email`,`password`,`type`) VALUES ('$name','$email','$md_password','$type')"); 
-     if($query){
-         $user_id=mysqli_insert_id($con);
-     }
+    if (empty($_SESSION['college_id'])) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'College ID missing. Please login again.'
+    ]);
+    exit;
+}
+
+$query = $con->prepare(
+"INSERT INTO accounts (`name`,`email`,`password`,`type`,`college_id`)
+ VALUES (?,?,?,?,?)"
+);
+$query->bind_param("ssssi",$name,$email,$md_password,$type,$college_id);
+$query->execute();
+
+$user_id = $con->insert_id;
+
     }
      
       $usermeta = array(
@@ -108,7 +103,7 @@
         'total_mark'=>$total_mark,
         'obtain_mark'=>$obtain_mark,
          'percentage'=>$percent,
-         'st_class'=>$st_class,
+      
         'st_section'=>$st_section,
         'subject_stream'=> $subject_stream,
           'doa'=>$doa,
@@ -119,32 +114,65 @@
     //  echo json_encode($usermeta);die;
 
                       
-   $check_query=mysqli_query($con,"SELECT * FROM accounts WHERE email='$father_mobile'");
-       if(mysqli_num_rows($check_query)>0){
-      echo 'Parent is already Registered';die;
+   $check_query=$con->prepare("SELECT * FROM accounts WHERE email=? AND college_id=?");
+$check_query->bind_param("si",$father_mobile, $_SESSION['college_id']);
+$check_query->execute();
+
+$result=$check_query->get_result();
+       if($result->num_rows>0){
+     echo json_encode([
+  'success' => false,
+  'message' => 'parent email already exists'
+]);
+exit;
        }
      else{
-$md_password=md5($father_mobile);
-     $query=mysqli_query($con,"INSERT INTO accounts (`name`,`email`,`password`,`type`) VALUES ('$father_name','$father_mobile','$md_password','parent')"); 
-     if($query){
-         $parent_id=mysqli_insert_id($con);
+$md_password=password_hash($father_mobile,PASSWORD_DEFAULT);
+$college_id=$_SESSION['college_id'];
+     $query=$con->prepare("INSERT INTO accounts (`name`,`email`,`password`,`type`,`college_id`) VALUES (?,?,?,?,?)"); 
+     $type='parent';
+     $query->bind_param("ssssi",$father_name,$father_mobile,$md_password,$type,$college_id);
+     $query->execute();
+     if(!$query){
+      die("parent insert failed");
      }
+         $parent_id=$con->insert_id;
+     
      $child= [$user_id];
      $child=serialize($child);
-     mysqli_query($con,"INSERT INTO usermeta (`user_id`,`meta_key`,`meta_value`) VALUES ('$parent_id','children','$child')") or die(mysqli_error($con));
+     $stxtchild=$con->prepare("INSERT INTO usermeta (`user_id`,`meta_key`,`meta_value`) VALUES (?,'children',?)");
+  
+      $stxtchild->bind_param("is",$parent_id,$child);
+     if(!$stxtchild->execute()){
+        die($stxtchild->error);
+     }
+    
     }
 
-
+  $stmt=$con->prepare("INSERT INTO usermeta (`user_id`, `meta_key`, `meta_value`) VALUES (?,?,?)");
     foreach($usermeta as $key => $value){
-      mysqli_query($con,"INSERT INTO usermeta (`user_id`, `meta_key`, `meta_value`) VALUES ('$user_id','$key','$value')") or die(mysqli_error($con));
+       if ($value === '' || $value === null) {
+        continue;
+    }
+
+    if (is_array($value)) {
+        $value = json_encode($value);
+    }
+
+      $stmt->bind_param("iss",$user_id,$key,$value);
+      if(!$stmt->execute()){
+        die($stmt->error);
+      }
     }
       $response = array(
      'success' => TRUE,
      'payment_method' => $payment_method,
      'std_id' =>$user_id
     );
- 
-  // echo json_encode($response);die;
+header('Content-Type: application/json');
+echo json_encode($response);
+exit;
+
      }
    
 
@@ -157,9 +185,32 @@ $classes = get_posts([
 
 ]);
 
+$user = $_GET['user'] ?? '';
+
+
 ?>
+
 <?php include('header.php')?>
 <?php include('sidebar.php')?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+</head>
+<body>
+  
+</body>
+</html>
+<script src="plugins/jquery/jquery.min.js"></script>
+<!-- AdminLTE App -->
+<script src="dist/js/adminlte.js"></script>
+
+<!-- OPTIONAL SCRIPTS -->
+<!-- <script src="dist/js/demo.js"></script> -->
 
 <div class="content-header">
       <div class="container-fluid">
@@ -167,13 +218,16 @@ $classes = get_posts([
           <div class="col-sm-6">
             <div class= "d-flex">
             <h1 class="m-0 text-dark"> Manage Accounts</h1>
-            <a href="user-account.php?user=<?php echo $_REQUEST['user']?>&action=add-new" class="btn btn-primary btn-sm mx-4">Add new</a>
+            <a href="user-account.php?user=<?php echo $user; ?>&action=add-new"
+   class="btn btn-primary btn-sm mx-4">Add new</a>
+
 </div>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Accounts</a></li>
-              <li class="breadcrumb-item active"><?php echo ucfirst($_REQUEST['user'])?></li>
+              <li class="breadcrumb-item active"><?php echo ucfirst($user); ?></li>
+
             </ol>
           </div><!-- /.col -->
           <?php
@@ -379,8 +433,8 @@ $classes = get_posts([
 
 <div class="col-lg-3">
    <div class="form-group m-2">
-              <label for="obtain_marks">Obtained Marks -</label>
-      <input type="text" class="form-control" id="obtain_marks" placeholder="Obtained marks" name="obtain_marks" autocomplete="off"/>
+              <label for="obtain_mark">Obtained Marks -</label>
+      <input type="text" class="form-control" id="obtain_mark" placeholder="Obtained mark" name="obtain_mark" autocomplete="off"/>
         </div>
 </div>
 
@@ -408,8 +462,8 @@ $classes = get_posts([
             <option value="class"> select the class </option>
 
             <?php
-            foreach ($classes as $key=>$class) {
-                echo '<option value=""> '.$class->title.' </option>';
+            foreach ($classes as $class) {
+                echo '<option value="'.$class->id.'">'.$class->title.'</option>';
 
             }
             ?>
@@ -420,7 +474,10 @@ $classes = get_posts([
    <div class="col-lg-3">
        <div class="form-group m-2">
               <label for="st_section">Section -</label>
-   <input type="text" class="form-control" id="st_section" placeholder="section Name" name="st_section" autocomplete="off"/>
+   <select name="st_section" id="st_section" class="form-control">
+    <option value="">Select Section</option>
+</select>
+
     </div>
         </div>
   </div>
@@ -446,7 +503,8 @@ $classes = get_posts([
   <label for="online-payment"><input type="radio" name="payment_method" value="online" id="online-payment"> Online payment</label>
     <label for="offline-payment"><input type="radio" name="payment_method" value="offline" id="offline-payment"> Offline payment</label>
         </div>  
-         <input type="hidden" name="type" value="<?php echo $_REQUEST['user'] ?>"> 
+         <input type="hidden" name="type" value="<?php echo $user; ?>">
+
       <!-- <button class="btn btn-success mt-1 mb-1 ml-1" name="submit">Register</button> -->
 <input type="submit" name="submit" class="btn btn-primary mt-1 mb-1 ml-1" id="submit" value="Register">
         </form>
@@ -471,65 +529,221 @@ $classes = get_posts([
           </div>
           <input type="hidden" name="std_id" value="<?php echo isset($_GET['std_id'])?$_GET['std_id']:''?>">
           <button type="submit" class="btn btn-primary">Submit</button>
+          
         </form>
           <?php } ?>
         <?php }  else { ?>
         <!-- Info boxes -->
-         
-        <div class="table-responsive">
-          <table class="table table-bordered" id="users-table">
-            <thread>
-            
-              <tr>
-                <th>S.No</th>
-                <th>Name</th>
-            
-                <th>Email</th>
-                <th>Action</th>
-</tr>
-</thread>
-  <tbody>
+         <div class="card">
+          <div class="card-body">
+            <form action="" method="get">
+              <?php
+             $class_id = $_GET['class'] ?? '';
+$section_id = $_GET['section'] ?? '';
 
-        <?php 
-$count =1;
-        $user_query='SELECT * FROM accounts WHERE `type`="'.$_REQUEST['user'].'"';
-        $user_result=mysqli_query($con,$user_query);
-        while($users=mysqli_fetch_object($user_result))
-        { ?>
-        <tr>
-          <td><?=$count++?></td>
-          <td><?=$users->Name?></td>
-          <td><?=$users->email?></td>
-         
-        </tr>
-        
-        <?php } ?>
-</tbody>
+              ?>
+              <div class="row">
+            <div class="col-lg-6">
+<div class="form-group">
+ <label for="class">Select Class:-</label>
+    <select name="class" id="filter_class" class="form-control">
+
+
+        <option value="">select class</option>
+        <?php
+        $args=array(
+          'type'=>'class',
+          'status'=>'publish'
+        );
+        $s_class_id=get_posts($args);
+        foreach($s_class_id as $key => $s_class){
+$selected=($class_id==$s_class->id)?'selected':'';
+ echo '<option value="' . $s_class->id . '" '.$selected.'>' . $s_class->title . '</option>';
+
+        }
+        ?>
+        </select>
+        </div>
+        </div>
+          <div class="col-lg-6">
+                 <div class="form-group" id="section-container">
+    
+        </div>
+        </div>
+      </div>
+
+      <div class=" justify-content-end">
+     <button type="submit" class="btn btn-danger" >Apply</button>
+
+      </div>
+            </form>
+          </div>
+         </div>
+         <form method="post">
+        <div class="table-responsive">
+  <table class="table table-bordered table-striped w-100" id="example">
+  <thead>
+    <tr>
+      <th>Enroll</th>
+      <th>Class</th>
+      <th>Section</th>
+      <th>Photo</th>
+      <th>Name</th>
+      <th>Email ID</th>
+      <th>Phone NO</th>
+      <th>DOB</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
 </table>
 
        
+       
         </div>
-      
+        </form>
 
         </div>
         <!-- /.row -->   
       </div><!--/. container-fluid -->
+       <div class="container my-4">
+      <?php
+      if(isset($_GET['edit_student'])){
+include('edit_user.php');
+      }
+      ?>
+      </div>
+      <div class="container">
+        <?php
+        if(isset($_GET['delete_student'])){
+          include('delete_user.php');
+        }
+        ?>
+      </div>
       <?php } ?>
     </section>
-
-    
+<!-- <script src="lib/jquery/jquery-3.7.1.min.js"></script> -->
+<!-- <script src="lib/datatables/dataTables.js"></script> -->
+<!--     
 <script src="lib/jquery/jquery-3.7.1.min.js"></script>
 <script src="lib/datatables/dataTables.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha384-VFQrHzqBh5qiJIU0uGU5CIW3+OWpdGGJM9LBnGbuIH2mkICcFZ7lPd/AAtI7SNf7" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js" integrity="sha384-/RlQG9uf0M2vcTw3CX7fbqgbj/h8wKxw7C3zu9/GxcBPRKOEcESxaxufwRXqzq6n" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.3.4/b-3.2.5/b-html5-3.2.5/b-print-3.2.5/datatables.min.js" integrity="sha384-hjYoYXjMb7qOCiUKZn/MMUpy5ENqdSTMt7R5s2FCRAPxYlVvaeqpU+1YcrVkBW8p" crossorigin="anonymous"></script>
+<script src="lib/jquery/dataTables.buttons.js"></script>
+ <script src="lib/jquery/buttons.dataTables.js"></script> -->
+<!-- <script>
+    jQuery(document).ready(function (){
+jQuery('#example').DataTable();
+ 
+
+    })
+
+    
+</script> -->
+
+<?php include('footer.php')?>
+ <!-- <script>
+  jQuery('#example').DataTable({
+  
+    
+    columns: [
+        { data: "s_no" },
+        { data: "Name" },
+        { data: "email" },
+        { data: "action" }
+    ]
+});
+
+  </script>   -->
 <script>
-    jQuery(document).ready( function () {       
-    jQuery('#users-table').DataTable({
-    dom: 'Bfrtip',
-    buttons: ['copy','excel','csv','print','pdf']
+
+var table = $('#example').DataTable({
+    processing: true,
+        dom: 'Bfrtip',
+    buttons: [
+      {
+    extend: 'excelHtml5',
+            text: 'Excel',
+            className: 'btn btn-success btn-sm',
+            exportOptions: {
+                columns: ':not(:last-child)'
+}
+      },
+      {
+      extend: 'print',
+            text: 'Print',
+            className: 'btn btn-primary btn-sm',
+            exportOptions: {
+                columns: ':not(:last-child)'
+        }
+      },
+      {
+       extend: 'pdfHtml5',
+            text: 'PDF',
+            className: 'btn btn-danger btn-sm',
+            orientation: 'landscape',   
+            pageSize: 'A4',
+            exportOptions: {
+                columns: ':not(:last-child)'
+      }
+    }
+    ],
+    ajax: {
+        url: "ajax.php",
+        type: "POST",
+    data: function (d) {
+   d.action = "get_user_details";
+   d.class_id = $('#filter_class').val();
+   d.section_id = $('#filter_section').val();
+}
+
+    },
+    columns: [
+        { data: 'enroll' },
+        { data: 'class' },
+        { data: 'section' },
+        { data: 'photo' },
+        { data: 'name' },
+        { data: 'email' },
+        { data: 'phone' },
+        { data: 'dob' },
+        { data: 'action' }
+    ]
+});
+$('#filter_class, #filter_section').change(function(){
+   table.ajax.reload();
+});
+
+
+</script>
+ 
+
+<script>
+
+$('#filter_class').on('change', function () {
+    let class_id = $(this).val();
+
+    $('#filter_section').html('<option>Loading...</option>');
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'get_sections',
+            class_id: class_id
+        },
+      success: function (res) {
+    if(res.status){
+        $('#filter_section').html(res.options);
+    } else {
+        $('#filter_section').html('<option value="">No sections found</option>');
+    }
+},
+error: function () {
+    $('#filter_section').html('<option value="">Error loading sections</option>');
+}
+
     });
-} );
+});
 
 </script>
 <script>        
@@ -537,29 +751,37 @@ $count =1;
 
   
 // jQuery('#users-table').DataTable();
-   jQuery('#user-accounts').on('submit',function(){
-console.log();
-if(true){
+   jQuery('#user-account').on('submit',function(e){
+  e.preventDefault();
+
   var formdata=jQuery(this).serialize();
 
   jQuery.ajax({
 type: 'post',
-url:'http://localhost/student%20management/AdminLTE-3.05/admin/user-account.php',
+url:'user-account.php?user=student',
 data:formdata,
   dataType :'json',
 success: function (response) {
 console.log(response);
-if(response.success == true){
-  location.href = 'http://localhost/student%20management/AdminLTE-3.05/admin/user-account.php?user=student&action=fee-payment&std_id='+response.std_id
-  +'&payment_method='+response.payment_method;
+if(response.success){
+  location.href =
+                  'user-account.php?user=student&action=fee-payment'
+                  + '&std_id=' + response.std_id
+                  + '&payment_method=' + response.payment_method;
+}
+else{
+  alert(response.message);
 }
 },
+ error: function(xhr){
+            console.log(xhr.responseText);
+            alert('AJAX failed – check console');
+        }
   });
-}
-return false;
-   });
+});
+
 
       </script>
    
-<?php include('footer.php')?>
+
   

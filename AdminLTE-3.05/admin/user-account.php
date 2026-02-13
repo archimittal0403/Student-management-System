@@ -11,7 +11,14 @@
       $name = isset($_POST['name'])?$_POST['name']:'';
     $dob = isset($_POST['dob'])?$_POST['dob']:'';
     $mobile = isset($_POST['mobile'])?$_POST['mobile']:'';
-    $email = isset($_POST['email'])?$_POST['email']:'';
+    $email = trim(isset($_POST['email'])?$_POST['email']:'');
+if(empty($email) || !filter_var($email,FILTER_VALIDATE_EMAIL)){
+  echo json_encode([
+    'success' => false,
+    'message' => 'please enter a valid email address'
+  ]);
+  exit;
+}
     $address = isset($_POST['address'])?$_POST['address']:'';
      $country = isset($_POST['country'])?$_POST['country']:'';
    $state = isset($_POST['state'])?$_POST['state']:'';

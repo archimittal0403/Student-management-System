@@ -4,7 +4,19 @@
  include('includes/config.php');
  include('includes/functions.php');
 ?> 
+<?php
 
+$logopath = $_SERVER['DOCUMENT_ROOT'] . '/student management/AdminLTE-3.05/admin/uploads/akglogo.png';
+// echo $logopath;
+if(file_exists($logopath)){
+    $type=pathinfo($logopath,PATHINFO_EXTENSION);
+    $data=file_get_contents($logopath);
+$base64_logo='data:image/' . $type . ';base64,' . base64_encode($data);
+}
+else{
+    $base64_logo='';
+    }
+?>
 <?php
 
  if(isset($_POST['type']) && $_POST['type'] == 'student' && isset($_POST['email']) && !empty($_POST['email'])){
@@ -629,37 +641,8 @@ include('edit_user.php');
       </div>
       <?php } ?>
     </section>
-<!-- <script src="lib/jquery/jquery-3.7.1.min.js"></script> -->
-<!-- <script src="lib/datatables/dataTables.js"></script> -->
-<!--     
-<script src="lib/jquery/jquery-3.7.1.min.js"></script>
-<script src="lib/datatables/dataTables.js"></script>
-<script src="lib/jquery/dataTables.buttons.js"></script>
- <script src="lib/jquery/buttons.dataTables.js"></script> -->
-<!-- <script>
-    jQuery(document).ready(function (){
-jQuery('#example').DataTable();
- 
-
-    })
-
-    
-</script> -->
-
 <?php include('footer.php')?>
- <!-- <script>
-  jQuery('#example').DataTable({
-  
-    
-    columns: [
-        { data: "s_no" },
-        { data: "Name" },
-        { data: "email" },
-        { data: "action" }
-    ]
-});
 
-  </script>   -->
 <script>
 
 var table = $('#example').DataTable({
@@ -690,6 +673,38 @@ var table = $('#example').DataTable({
             pageSize: 'A4',
             exportOptions: {
                 columns: ':not(:last-child)'
+      },
+      customize:function (doc){
+        doc.content.splice(0,0,{
+          margin:[0,0,0,12],
+          alignment:'center',
+          stack:[
+            {
+              text:'Ajay Kumar Garg Engineering College',
+              fontSize:16,
+              bold:true
+            },
+            {
+              text:'27th Km Milestone, Adhyatmik Nagar, Delhi-Meerut Expressway, Ghaziabad - 201015, Uttar Pradesh, India',
+              fontSize:8,
+              margin:[0,5,0,0]
+            },
+            {
+              text:'91-8744052891, +91-8744052893, +91-7290034978.',
+              fontSize:6,
+              margin:[0,5,0,0]
+            }
+          ]
+        
+        });
+           <?php if(!empty($base64_logo)){?>
+            doc.content.splice(1,0,{
+                image:'<?=$base64_logo ?>',
+            width:50,
+            alignment:'left',
+            margin:[0,-60,0,12]
+            });
+            <?php } ?>
       }
     }
     ],

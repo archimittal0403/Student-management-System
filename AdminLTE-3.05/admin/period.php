@@ -1,4 +1,4 @@
-<?php include('../includes/config.php')?>
+<?php include('includes/config.php')?>
 
 <?php 
 if(isset($_POST['submit']))
@@ -24,7 +24,7 @@ header('Location: ../admin/dashboard.php');
 ?>
 <?php include('header.php')?>
 <?php include('sidebar.php')?>
-<?php include('../includes/functions.php')?>
+<?php include('includes/functions.php')?>
 
 
 <?php 
@@ -43,7 +43,7 @@ header('Location: ../admin/dashboard.php');
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Admin</a></li>
-              <li class="breadcrumb-item active">Sections</li>
+              <li class="breadcrumb-item active">periods</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -99,7 +99,7 @@ foreach($periods as $period){
     <td><?=$count++?></td>
     <td><?=$period->title?></td>
     <td><?php echo date('h:i A',strtotime($from)) ?> </td>
-    <td><?php echo date('h:I A',strtotime($to)) ?></td>
+    <td><?php echo date('h:i A',strtotime($to)) ?></td>
 <?php } ?>
 </td>
 </td></td>

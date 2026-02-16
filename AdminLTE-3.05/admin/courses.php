@@ -1,11 +1,7 @@
-<?php include('../includes/config.php')?>
+<?php include('includes/config.php')?>
 
 <?php 
 if(isset($_POST['submit'])){
-  // echo '<pre>';
-  // print_r($_FILES);
-  // echo '</pre>';
-
   $name=$_POST['name'];
   $category=$_POST['category'];
   $duration=$_POST['duration'];
@@ -45,7 +41,12 @@ if ($uploadOk == 0) {
 // if everything is ok, try to upload file
 } else {
   if (move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $target_file)) {
-    mysqli_query($con,"INSERT INTO courses (`name`,`category`,`duration`,`image`,`date`) VALUES('$name', '$category', '$duration', '$image', '$date')");
+  $stmt=$con->prepare(
+    "INSERT INTO courses (`name`,`category`,`duration`,`image`,`date`) VALUES(?,?,?,?,?)"
+  );
+
+  $stmt->bind_param("sssss",$name,$category,$duration,$image,$date);
+  $stmt->execute();
     $_SESSION['success_msg'] = 'course has been uploaded successfully';
     header('Location: courses.php');
   } else {
@@ -160,22 +161,39 @@ if ($uploadOk == 0) {
                 <th>Category</th>
                 <th>Duration</th>
                 <th>Date</th>
+                <th>Action</th>
 </tr>
 </thread>
   <tbody>
     <?php
     $count=1;
-    $curse_query=mysqli_query($con,'SELECT * FROM courses');
 
-    while($course=mysqli_fetch_object($curse_query)){?>
+    $curse_query=$con->prepare('SELECT * FROM courses');
+ $curse_query->execute();
+ $result=$curse_query->get_result();
+
+    while($course=$result->fetch_assoc()){
+         $course_id=$course['id'];
+         $couse_name=$course['name'];
+         $course_category=$course['category'];
+         $course_duration=$course['duration'];
+         $course_image=$course['image'];
+         $course_date=$course['date'];
+         ?>
+ 
       <tr>
-      <td><?=$count++?></td>
-      <td><img src="uploads/<?=$course->image?>" height="70" alt=""></td>
-  <td><?=$course->name?></td>
-  <td><?=$course->category?></td>
-  <td><?=$course->duration?></td>
-  <td><?=$course->date?></td>
-  
+      <td><?php  echo $count++; ?></td>
+      <td><img src="./uploads/<?php echo $course_image;?>" height="70" alt=""></td>
+  <!-- <td><?//=$course->name?></td> -->
+  <td><?php echo htmlspecialchars($couse_name); ?></td>
+  <td><?php echo htmlspecialchars($course_category);?></td>
+  <td><?php echo htmlspecialchars($course_duration);?></td>
+  <td><?php echo htmlspecialchars($course_date); ?></td>
+ <td>
+       
+          <a href="courses.php?edit_course=<?php echo $course_id ?>" class="btn btn-sm btn-success"><i class="fa fa-pencil-alt"></i></a> 
+          <a href="courses.php?delete_course=<?php echo $course_id?>" class="btn btn-sm btn-success"><i class="fa fa-trash"></i></a> 
+         </td>
   </tr>
   <?php } ?>
     </tbody>
@@ -187,5 +205,23 @@ if ($uploadOk == 0) {
 
      <?php } ?>
       </div><!--/. container-fluid -->
+      <div class="container my-4">
+    <?php
+    if(isset($_GET['delete_course'])){
+        include('delete_course.php');
+    }
+?>
+
+   
+      </div><!--/. container-fluid -->
+      <div class="container my-4">
+    <?php
+    if(isset($_GET['edit_course'])){
+        include('edit_course.php');
+    }
+?>
+</div>
+
+
     </section>
 <?php include('footer.php')?>

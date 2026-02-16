@@ -1,5 +1,5 @@
-<?php include('../includes/config.php')?>
-<?php include('../includes/functions.php')?>
+<?php include('includes/config.php')?>
+<?php include('includes/functions.php')?>
 <?php 
 // print_r(get_the_classes());
 if(isset($_POST['submit'])){
@@ -46,7 +46,10 @@ if ($uploadOk == 0) {
 // if everything is ok, try to upload file
 } else {
   if (move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $target_file)) {
-    mysqli_query($con,"INSERT INTO courses (`name`,`category`,`duration`,`image`,`date`) VALUES('$name', '$category', '$duration', '$image', '$date')");
+    $stxt=$con->prepare("INSERT INTO courses (`name`,`category`,`duration`,`image`,`date`) VALUES(?,?,?,?,?)");
+    $stxt->bind_param("sssss",$name,$category,$duration,$image,$date);
+    $stxt->execute();
+   
     $_SESSION['success_msg'] = 'course has been uploaded successfully';
     header('Location: courses.php');
   } else {
@@ -228,7 +231,7 @@ Add New Subjects
       <tr>
       <td><?=$count++?></td>
      
-  <td><?=$course->name?></td>
+  
   <td><?=$subject->title?></td>
   <td><?=$subject->publish_date?></td>
  

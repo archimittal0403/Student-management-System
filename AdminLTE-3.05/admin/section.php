@@ -1,15 +1,24 @@
-<?php include('../includes/config.php')?>
+<?php include('includes/config.php')?>
 <?php include('header.php')?>
 <?php include('sidebar.php')?>
-<?php include('../includes/functions.php')?>
+<?php include('includes/functions.php')?>
 
 
 <?php 
 
 if(isset($_POST['submit'])){
     $title=$_POST['title'];
-    mysqli_query($con,"INSERT INTO section (title) VALUE ('$title')");
-}
+    $query=$con->prepare("INSERT INTO `posts`(`author`, `title`, `description`, `type`, `status`,`parent`) VALUES (?,?,?,?,?,?)");
+    
+$author='1';
+$describe='description';
+$type='section';
+$status='publish';
+$parent='0';
+$query->bind_param("issssi",$author,$title,$describe,$type,$status,$parent);
+$query->execute();
+
+     }
 ?>
 <div class="content-header">
       <div class="container-fluid">
@@ -52,8 +61,7 @@ if(isset($_POST['submit'])){
                 <th>S.No</th>
                 <th>Name</th>
             
-                <th>Email</th>
-                <th>Action</th>
+               
 </tr>
 </thread>
   <tbody>
@@ -98,7 +106,7 @@ foreach($sections as $section){ ?>
      <form action="" method="POST">
       <div class="form-group">
         <h5>Title</h5>
-        <input type="text" name="title" id=""  class="px-4 py-1" placeholder="Title" required-class="form-control">
+        <input type="text" name="title" id=""  class="px-4 py-1" placeholder="Enter the section" required-class="form-control">
     
       </div>
       </div>

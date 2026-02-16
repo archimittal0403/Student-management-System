@@ -36,6 +36,10 @@ if (isset($_POST['login'])) {
         exit;
     }
 
+    // cookies 
+    if(isset($_POST['remember'])){
+        $_SESSION['remember']="true";
+    }
     $pass_md5 = md5($pass); // keep as MD5 for now
 
     // Prepared statement (safe)

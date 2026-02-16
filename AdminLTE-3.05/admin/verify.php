@@ -30,12 +30,17 @@ if(isset($_POST['verify_otp'])){
         $_SESSION['login'] = true;         // MUST
         $_SESSION['user_type'] = 'admin';  // ya jo type hai DB me
       
-        $_SESSION['user_id'] = $result->fetch_assoc()['id']; // optional
+        $_SESSION['user_id'] = $user['id']; // optional
           $_SESSION['college_id'] = $user['college_id'];   // 🔥 ADD THIS
         // delete OTP
         $stmt2 = $con->prepare("UPDATE accounts SET user_otp=NULL WHERE email=?");
         $stmt2->bind_param("s", $user_email);
         $stmt2->execute();
+
+        // set cokkies 
+        if(isset($_POST['remember'])){
+            setcookie("email","$user_email",time()+86400,"/");
+        }
 
         header("Location: dashboard.php");  // redirect
         exit();
@@ -86,6 +91,7 @@ if(isset($_POST['verify_otp'])){
 <label for="email" class="form-label">OTP :-</label>
 <input type="number" id="user_otp" name="user_otp" placeholder="Enter the otp" required="required"   autocomplete="off" class="form-control w-50 ">
 </div>
+<input type="checkbox" name="remember">Remember Me
 
 <div class="form-outline mb-4">
 <input type="submit" class="bg-success  py-2 px-3 border-0 text-light" name="verify_otp" value="verify otp">

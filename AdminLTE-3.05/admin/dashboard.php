@@ -1,5 +1,12 @@
 <?php
+// echo "<pre>";
+// print_r($_COOKIE);
+// echo "</pre>";
 session_start();
+if(!isset($_SESSION['login'])){
+   header("Location: login.php");
+   exit();
+}
 include('includes/config.php');
 ?>
 <?php include('header.php')?>

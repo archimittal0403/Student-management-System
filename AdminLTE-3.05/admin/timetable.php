@@ -1,4 +1,4 @@
-<?php include('../includes/config.php')?>
+<?php include('includes/config.php')?>
 
 <?php
 
@@ -13,7 +13,17 @@ if(isset($_POST['submit'])){
   $status='publish';
   $author=1;
   $type='timetable';
-  $query=mysqli_query($con,"INSERT INTO posts (`type`,`author`,`status`,`publish_date`) VALUES('$type','$author','$status','$date_add')");
+  $title='timetable entry';
+  //$query=mysqli_query($con,"INSERT INTO posts (`type`,`author`,`status`,`publish_date`) VALUES('$type','$author','$status','$date_add')");
+  $query=$con->prepare("INSERT INTO `posts`(`author`, `title`, `description`, `type`, `status`,`parent`) VALUES (?,?,?,?,?,?)");
+  $author='1';
+  $describe='description';
+  $type='timetable';
+  $publish='publish';
+  $parent='0';
+  $query->bind_param("issssi",$author,$title,$describe,$type,$publish,$parent);
+  $query->execute();
+ 
   if($query){
     $item_id=mysqli_insert_id($con);
   }
@@ -26,15 +36,108 @@ if(isset($_POST['submit'])){
     'subject_id'=>$subject_id,
   );
   foreach($metadata as $key => $value){
-    mysqli_query($con,"INSERT INTO metadata (`item_id`,`meta_key`,`meta_value`) VALUES ('$item_id','$key','$value')");
+    $stxt=$con->prepare("INSERT INTO metadata (`item_id`,`meta_key`,`meta_value`) VALUES (?,?,?)");
+    $stxt->bind_param("iss",$item_id,$key,$value);
+    $stxt->execute();
   }
   header('Location:timetable.php');
 }
 
 ?>
+<?php
+
+  if(isset($_POST['save_all'])){
+
+    $class_id   = $_POST['class'];
+    $section_id = $_POST['section'];
+
+    foreach($_POST['teacher_name'] as $day => $periods){
+
+        foreach($periods as $period_id => $teacher_name){
+$subject_name = $_POST['subject_name'][$day][$period_id];
+    if(empty($teacher_name) && empty($subject_name)){
+        continue;
+    }
+
+            // Get teacher id
+            $teacher_id = 0;
+            $select_teacher = mysqli_query($con,"SELECT id FROM accounts WHERE Name='$teacher_name'");
+            if(mysqli_num_rows($select_teacher)>0){
+                $teacher_id = mysqli_fetch_assoc($select_teacher)['id'];
+            }
+
+            // Get subject id
+            $subject_id = 0;
+            $select_subject = mysqli_query($con,"SELECT id FROM courses WHERE name='$subject_name'");
+            if(mysqli_num_rows($select_subject)>0){
+                $subject_id = mysqli_fetch_assoc($select_subject)['id'];
+            }
+
+            // Check existing record
+            $check=mysqli_query($con,"SELECT p.id FROM posts p 
+                INNER JOIN metadata m1 ON m1.item_id=p.id AND m1.meta_key='class' AND m1.meta_value='$class_id'
+                INNER JOIN metadata m2 ON m2.item_id=p.id AND m2.meta_key='section' AND m2.meta_value='$section_id'
+                INNER JOIN metadata m3 ON m3.item_id=p.id AND m3.meta_key='day_name' AND m3.meta_value='$day'
+                INNER JOIN metadata m4 ON m4.item_id=p.id AND m4.meta_key='period_id' AND m4.meta_value='$period_id'
+                WHERE p.type='timetable' AND p.status='publish'");
+
+            if(mysqli_num_rows($check)>0){
+
+                $item_id=mysqli_fetch_assoc($check)['id'];
+if($teacher_id>0){
+                mysqli_query($con,"UPDATE metadata SET meta_value='$teacher_id' 
+                    WHERE item_id='$item_id' AND meta_key='teacher_id'");
+}
+if($subject_id>0){
+
+                mysqli_query($con,"UPDATE metadata SET meta_value='$subject_id' 
+                    WHERE item_id='$item_id' AND meta_key='subject_id'");
+}
+
+            } else {
+
+                // Insert new post
+                $query=$con->prepare("INSERT INTO posts(author,title,description,type,status,parent) VALUES (?,?,?,?,?,?)");
+                $author=1;
+                $title='timetable entry';
+                $desc='description';
+                $type='timetable';
+                $status='publish';
+                $parent=0;
+
+                $query->bind_param("issssi",$author,$title,$desc,$type,$status,$parent);
+                $query->execute();
+
+                $item_id=mysqli_insert_id($con);
+
+                $metadata = [
+                    'class'=>$class_id,
+                    'section'=>$section_id,
+                    'teacher_id'=>$teacher_id,
+                    'period_id'=>$period_id,
+                    'day_name'=>$day,
+                    'subject_id'=>$subject_id
+                ];
+
+                foreach($metadata as $key=>$value){
+                    $stmt=$con->prepare("INSERT INTO metadata(item_id,meta_key,meta_value) VALUES (?,?,?)");
+                    $stmt->bind_param("iss",$item_id,$key,$value);
+                    $stmt->execute();
+                }
+            
+        }
+        }
+    }
+
+    header("Location:timetable.php?class=$class_id&section=$section_id");
+    exit;
+}
+
+
+?>
 <?php include('header.php')?>
 <?php include('sidebar.php')?>
-<?php include('../includes/functions.php')?>
+<?php include('includes/functions.php')?>
 
 
 
@@ -60,7 +163,8 @@ if(isset($_POST['submit'])){
      <section class="content">
       <div class="container-fluid">
 
-      <?php if(isset($_GET['action'])&& $_GET['action']=='add'){?>
+      <?php if(isset($_GET['action'])&& $_GET['action']=='add'){ ?>
+
 <div class="card">
   <div class="card-body">
 <form action="" method="post">
@@ -91,6 +195,16 @@ if(isset($_POST['submit'])){
     <label for="section">Select Section:-</label>
     <select require name="section" id="section" class="form-control">
         <option value="">Select section</option>
+             <?php
+      $args = array(
+        'type' => 'section',
+        'status' =>'publish',
+      );
+ 
+        $section=get_posts($args); 
+        foreach($section as $key => $section) { ?>
+<option value="<?php echo $section->id ?>"><?php echo $section->title ?></option>
+<?php } ?>
     </select>
     </div>
             </div> 
@@ -100,8 +214,17 @@ if(isset($_POST['submit'])){
     <label for="teacher_id">Select Teacher:-</label>
     <select require name="teacher_id" id="teacher_id" class="form-control">
         <option value="">Select teacher</option>
-        <option value="1">Teacher 1</option>
-        <option value="2">Teacher 2</option>
+       <?php
+$query=$con->prepare("SELECT id,Name FROM accounts WHERE type=?");
+$type='teacher';
+$query->bind_param("s",$type);
+$query->execute();
+$result=$query->get_result();
+
+       while($t=$result->fetch_object()){
+        echo '<option value="'.$t->id.'">'.$t->Name.'</option>';
+       }
+       ?>
     </select>
     </div>
             </div> 
@@ -158,7 +281,7 @@ foreach($days as $key => $day) { ?>
               <div class="form-group">
                 <label for="">&nbsp;</label>
                  <!-- &nbsp is used to prevent the line break between the two element  -->
-              <input type="submit" name="submit" value="submit" class="btn btn-primary form-control">
+               <input type="submit" name="submit" value="submit" class="btn btn-primary form-control"> 
 </div>
 </div>
         </div>
@@ -170,7 +293,12 @@ foreach($days as $key => $day) { ?>
       <?php } else { ?>
         <div class="card">
             <div class="card-body">
-       <form action="">
+       <form action="" method="get">
+
+        <?php
+        $class_id=isset($_GET['class'])?$_GET['class']:2;
+$section_id=isset($_GET['section'])?$_GET['section']:3;
+?>
         <div class="row">
             <div class="col-lg-6">
 <div class="form-group">
@@ -185,9 +313,12 @@ foreach($days as $key => $day) { ?>
       );
  
         $classes=get_posts($args); 
-        foreach($classes as $key => $class) { ?>
-<option value="<?php echo $class->id ?>"><?php echo $class->title ?></option>
-<?php } ?>
+        foreach($classes as $key => $class) { 
+          $selected= ($class_id == $class->id)? 'selected': '';
+        echo '<option value="' . $class->id . '" '.$selected.'>' . $class->title . '</option>';
+
+        } ?> 
+
     </select>
      
 
@@ -213,16 +344,24 @@ foreach($days as $key => $day) { ?>
     </div>
             </div> 
            
+            <div class="col-auto">
+              <button class="btn btn-primary">Apply</button>
+                          </div>
         </div>
 </form>
    </div>
 </div>
 </div>
+
 <div class="card">
     <div class="card-body">
+       <form action="timetable.php" method="post">
+
+<input type="hidden" name="class" value="<?php echo $class_id; ?>">
+<input type="hidden" name="section" value="<?php echo $section_id; ?>">
         <table class="table table-bordered">
           
-                <thread>
+                <thead>
                     <tr>
                         <th>Timming</th>
                         <th>Monday</th>
@@ -234,78 +373,108 @@ foreach($days as $key => $day) { ?>
                         <th>Sunday</th>
 </tr>
 
-</thread>
-<tbody>
-    <?php
-    $args =array(
-        'type' =>'period',
-        'status' =>'publish',
+</thead>
 
-    );
-    $periods = get_posts($args);
-    foreach($periods as $period) {
- //print_r(get_metadata($period->id,'from')[0]->meta_value);
- $from=get_metadata($period->id,'from')[0]->meta_value;
- $to=get_metadata($period->id,'to')[0]->meta_value;
+  <tbody>
+<?php
+$args = array(
+    'type'   => 'period',
+    'status' => 'publish',
+);
+
+$periods = get_posts($args);
+
+foreach ($periods as $period) {
+
+    $from = get_meta_value($period->id, 'from');
+    $to   = get_meta_value($period->id, 'to');
 ?>
-    <tr>
-        <td><?php echo date('h:i A',strtotime($from)) ?> - <?php echo date('h:I A',strtotime($to)) ?></td>
-        <?php
-        $days =['monday','tuesday','wednesday','thrusday','friday','saturday'];
-    foreach($days as $day) {
+<tr>
+    <!-- Period timing -->
+    <td>
+        <?php echo date('h:i A', strtotime($from)) . ' - ' . date('h:i A', strtotime($to)); ?>
+    </td>
 
- $query=mysqli_query($con ,"SELECT * FROM posts as p INNER JOIN metadata as md ON (md.item_id = p.id) INNER JOIN metadata as mp ON (mp.item_id = p.id) WHERE p.type='timetable' AND p.status='publish' AND md.meta_key='day_name' AND md.meta_value='$day' AND mp.meta_key='period_id' AND mp.meta_value=$period->id");
- if(mysqli_num_rows($query)>0){
- while($timetable=mysqli_fetch_object($query)){
- ?>       
- <td>
+    <?php
+    $days = ['monday','tuesday','wednesday','thursday','friday','saturday'];
 
-            <p>
-                <b>Teacher: </b>
+    foreach ($days as $day) {
 
-                <?php 
-                $teacher_id=get_metadata($timetable->item_id,'teacher_id',)[0]->meta_value;
-                echo get_user_data($teacher_id)[0]->Name;
-                ?>
-                <br>
-                   <b>Class: </b> 
-                   <?php
-                   $class_id=get_metadata($timetable->item_id,'class',)[0]->meta_value;
-                echo get_post(array('id'=>$class_id))->title;
-                ?>
-                    <br>
-                      <b>Seaction:
-                           <?php
-                   $section_id=get_metadata($timetable->item_id,'section',)[0]->meta_value;
-                echo get_post(array('id'=>$section_id))->title;
-                ?>
-                 </b> 
-                       <br>
-                         <b>Subject: </b> 
-                            <?php
-                   $subject_id=get_metadata($timetable->item_id,'subject_id',)[0]->meta_value;
-                echo get_post(array('id'=>$subject_id))->title;
-                ?>
-                 <br>
-</p>
-        </td>
+  $query = $con->prepare("
+            SELECT p.id
+            FROM posts p
+            INNER JOIN metadata d ON d.item_id=p.id AND d.meta_key='day_name' AND d.meta_value=?
+            INNER JOIN metadata pe ON pe.item_id=p.id AND pe.meta_key='period_id' AND pe.meta_value=?
+            INNER JOIN metadata c ON c.item_id=p.id AND c.meta_key='class' AND c.meta_value=?
+            INNER JOIN metadata s ON s.item_id=p.id AND s.meta_key='section' AND s.meta_value=?
+            WHERE p.type='timetable' AND p.status='publish'
+        ");
+        $period_id=$period->id;
+$query->bind_param("siii",$day,$period_id,$class_id,$section_id);
 
-<?php } 
- } else { ?>
- <td>unsheduled</td>
-    
-    <?php } 
-    }?>
+$query->execute();
+  $result=$query->get_result();
 
+        if ($result->num_rows> 0) {
+        
+            $tt = $result->fetch_object();
+        ?>
+            <td>
+               <!-- <form action="timetable.php" method="post"> -->
+        
+             
+    <input type="text" name="teacher_name[<?php echo $day; ?>][<?php echo $period->id;?>]" class="form-control" value="
+    <?php 
+    $teacher_id=get_meta_value($tt->id,'teacher_id');
+    $teacher_name=get_user_data($teacher_id);
+  
+    echo !empty($teacher_name)?$teacher_name[0]->Name:'';
+    ?>">
+  <input type="text" name="subject_name[<?php echo $day; ?>][<?php echo $period->id; ?>]" class="form-control" value="
+  <?php 
+  $subject_id=get_meta_value($tt->id,'subject_id');
+  $subject=mysqli_query($con,"SELECT name FROM `courses` WHERE id='$subject_id'");
+  while($row_fetch=mysqli_fetch_assoc($subject)){
+    $subject_name=$row_fetch['name'];
+  }
+  echo !empty($subject_name)?$subject_name:'';
+  ?>">
+   
+
+    <!-- <button type="submit" name="save" class="btn btn-sm btn-success mt-1">Save</button> -->
+               
+            </td>
+        <?php } else { ?>
+            <td class="text-muted">
+    <input type="text" name="teacher_name[<?php echo $day; ?>][<?php echo $period->id;?>]" class="form-control" value="">
+   
+  <input type="text" name="subject_name[<?php echo $day; ?>][<?php echo $period->id; ?>]" class="form-control" value="">
+   
+
+             </td>
+             
+        <?php } 
+    } ?>
 </tr>
-<?php } ?>
-</tbody>
  
+<?php } ?>
+
+</tbody>
+
+<?php } ?>
 </table>
+
+     <button type="submit" name="save_all" class="btn btn-sm btn-success mt-1">Save</button>
+</form>
     </div>
 </div>
 
-<?php } ?>
+
 
     </section>
 <?php include('footer.php')?>
+
+
+
+
+  
